@@ -1,0 +1,107 @@
+import React, { ReactNode, useCallback, useState, useRef } from 'react';
+import { History } from 'history';
+import { connect } from 'react-redux';
+import { IApplicationState } from '../../../store/index';
+import { useToggle, useTextInput } from '../../../hooks';
+import { RoutesConfig, Route } from '../../../config/routes.config';
+import { EmailInput, PasswordInput, LoginControls } from './child-components';
+import { actionCreators, AuthStatusEnum, reducer } from '../../../store/auth';
+import { MDBBtn, MDBCard, MDBCardBody, MDBCardImage, MDBCardTitle, MDBCol, MDBInput, MDBCardText, MDBLink } from 'mdbreact';
+
+type LoginProps = ReturnType<typeof reducer> & typeof actionCreators & { readonly history: History };
+
+const Login: React.FC<LoginProps> = ({ status, history, resetState, setAuthStatus, loginUserRequest }) => {
+	const navRoutes: Route[] = Object.keys(RoutesConfig)
+		.map((key) => RoutesConfig[key])
+		.filter((route) => route.type === 'Register');
+
+	const [showPassword, toggleShowPassword] = useToggle(false);
+	const [rememberMe, setRememberMe] = useState<boolean>(false);
+	const [isInputInvalid, setIsInputInvalid] = useState<boolean>(false);
+
+	const emailInput = useTextInput('');
+	const passwordInput = useTextInput('', showPassword ? 'text' : 'password');
+
+	const onFailedAuth = useCallback((): void => {
+		resetState();
+		setAuthStatus(AuthStatusEnum.NONE);
+	}, [resetState, setAuthStatus]);
+
+	const onRememberMeCheck = useCallback((checked: boolean): void => setRememberMe(checked), []);
+	const onSuccessfulAuth = useCallback((): void => history.push(RoutesConfig.Portal.path), [history]);
+
+	const handleLogin = (e: React.ChangeEvent<HTMLFormElement>): void => {
+		e.preventDefault();
+
+		if (status === AuthStatusEnum.PROCESS) {
+			return;
+		}
+
+		if (!emailInput.hasValue || !passwordInput.hasValue) {
+			// Run invalidInputs error and display toast notification (if one is not already active)
+			setIsInputInvalid(true);
+
+		} else {
+			// Clear any toast notifications and prepare state for Login request stub / run login request stub
+
+			setIsInputInvalid(false);
+			setAuthStatus(AuthStatusEnum.PROCESS);
+
+			setTimeout(() => {
+				loginUserRequest({
+					rememberMe,
+					email: emailInput.value,
+					password: passwordInput.value,
+				});
+			}, 1000);
+		}
+	};
+
+	return (
+		<React.Fragment>
+			<MDBCol>
+				<MDBCard className="container mt-5" style={{ width: '22rem' }}>
+					<MDBCardImage className="img-fluid" src="https://mdbootstrap.com/img/Photos/Others/images/43.jpg" waves />
+					<MDBCardBody>
+						<form onSubmit={handleLogin}>
+							<MDBCardTitle>Login to GG-Shark</MDBCardTitle>
+							<div className="d-inline">
+								<MDBCardText tag="div">
+									Don't have account?
+									<MDBBtn className="py-1 px-3" outline color="primary" size="sm">
+										{navRoutes.map(
+											(route: Route): ReactNode => (
+												<MDBLink className="p-0" to={route.path} key={route.path}>
+													{route.displayName}
+												</MDBLink>
+											),
+										)}
+									</MDBBtn>
+								</MDBCardText>
+							</div>
+
+							<EmailInput textInput={emailInput} isInputInvalid={isInputInvalid} />
+
+							<PasswordInput
+								textInput={passwordInput}
+								showPassword={showPassword}
+								isInputInvalid={isInputInvalid}
+								toggleShowPassword={toggleShowPassword}
+							/>
+
+							<LoginControls />
+						</form>
+
+						{/* <Authenticator authStatus={status} handleOnFail={onFailedAuth} handleOnSuccess={onSuccessfulAuth} /> */}
+					</MDBCardBody>
+				</MDBCard>
+			</MDBCol>
+		</React.Fragment>
+	);
+};
+
+const mapStateToProps = (state: IApplicationState) => ({
+	status: state.auth.status,
+});
+
+export default connect(mapStateToProps, actionCreators)(Login as any);
