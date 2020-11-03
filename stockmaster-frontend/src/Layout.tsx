@@ -4,7 +4,9 @@ import { Footer, Navbar } from './app/components';
 const Layout: React.FC = ({ children }) => (
 <Fragment>
     <Navbar />
-    {children}
+    <div className="footerVH">
+        {children}
+    </div>
     <Footer />
 </Fragment>
 );

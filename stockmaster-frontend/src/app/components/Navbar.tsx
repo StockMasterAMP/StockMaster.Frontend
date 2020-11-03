@@ -20,10 +20,10 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated }) => {
 
 	return (
 		<nav>
-			<MDBNavbar color="indigo" dark expand="md">
+			<MDBNavbar className="footer" color="blue" dark expand="md">
 				<MDBNavbarBrand>
 					<MDBNavLink to="/Portal">
-						<strong className="white-text">GG SHARK</strong>
+						<strong className="white-text">Stock Master</strong>
 					</MDBNavLink>
 				</MDBNavbarBrand>
 				<MDBNavbarNav right>

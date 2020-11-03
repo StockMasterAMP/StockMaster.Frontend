@@ -12,21 +12,24 @@ export type AuthStatus = 'none' | 'process' | 'success' | 'fail';
 export type ICredentials = {
 	email?: string;
 	password?: string;
-	rememberMe?: boolean;
 };
 
 export type IAuthUser = {
-	token: string | object;
-	validTo: string;
-	email: string;
-	status?: AuthStatus;
+	AccessToken: string | object;
+	RefreshToken: string;
+	Role: string;
+	Expires: number;
+	Email: string;
+	Status?: AuthStatus;
 };
 
 export type IAuthState = {
-	readonly token: string;
-	readonly validTo: string;
-	readonly email: string;
-	readonly status?: AuthStatus;
+	readonly AccessToken: string | object | null;
+	readonly RefreshToken: string | null;
+	readonly Role: string | null;
+	readonly Expires: number | null;
+	readonly Email: string;
+	readonly Status?: AuthStatus;
 	readonly isAuthenticated: boolean;
 };
 

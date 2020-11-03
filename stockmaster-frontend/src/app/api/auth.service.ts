@@ -13,7 +13,7 @@ class AuthService extends BaseService {
 	}
 
 	public static get Instance(): AuthService {
-		return this._authService || (this._authService = new this('Authentication'));
+		return this._authService || (this._authService = new this('5004'));
 	}
 
 	public async logoutAsync(): Promise<AxiosResponse> {
@@ -21,7 +21,7 @@ class AuthService extends BaseService {
 	}
 
 	public async loginAsync(credentials: ICredentials): Promise<IAuthUser> {
-		const { data } = await this.$http.post<IAuthUser>('Login', credentials);
+		const { data } = await this.$http.post<IAuthUser>('sign-in', credentials);
 		return data;
 	}
 }

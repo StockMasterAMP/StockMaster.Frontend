@@ -15,13 +15,14 @@ export const actionCreators = {
 
 	loginUserRequest: (credentials: ICredentials): IAppThunkAction<ReduxAction> => (dispatch) => {
 		AuthApi.loginAsync(credentials).then((authUser: IAuthUser) => {
-			if (authUser.status === AuthStatusEnum.SUCCESS) {
+			if (authUser.Status === AuthStatusEnum.SUCCESS) {
 				dispatch({
 					authUser,
 					type: ActionType.LOGIN_SUCCESS,
 				});
 
-				Cookies.set('authToken', authUser.token, { expires: new Date(authUser.validTo) });
+				Cookies.set('AccessToken', authUser.AccessToken, { expires: new Date(authUser.Expires) });
+				Cookies.set('RefreshToken', authUser.RefreshToken, { expires: new Date(authUser.Expires) });
 			} else {
 				dispatch({ type: ActionType.LOGIN_FAIL });
 			}
@@ -29,7 +30,8 @@ export const actionCreators = {
 	},
 
 	logoutUserRequest: (): IAppThunkAction<ReduxAction> => (dispatch) => {
-		Cookies.remove('authToken');
+		Cookies.remove('AccessToken');
+		Cookies.remove('RefreshToken');
 		dispatch({ type: ActionType.RESET_STATE });
 	},
 };

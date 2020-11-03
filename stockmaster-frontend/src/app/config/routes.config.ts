@@ -7,9 +7,7 @@ export type Route = {
 	readonly authenticatedRoute?: boolean;
 };
 
-export type RoutesConfig = { [key: string]: Route };
-
-export const RoutesConfig = Object.freeze<RoutesConfig>({
+export const RoutesConfig = Object.freeze<{ [key: string]: Route }>({
 	Register: {
 		exact: true,
 		type: 'Register',
@@ -24,13 +22,6 @@ export const RoutesConfig = Object.freeze<RoutesConfig>({
 		path: '/Login',
 		displayName: 'Login',
 		authenticatedRoute: false,
-	},
-
-	Portal: {
-		exact: true,
-		path: '/Portal',
-		displayName: 'Portal',
-		authenticatedRoute: true,
 	},
 
 	Logout: {

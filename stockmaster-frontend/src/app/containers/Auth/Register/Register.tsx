@@ -16,9 +16,9 @@ const Register: React.FC<RegisterProps> = ({
     <React.Fragment>
         <MDBCol>
             <MDBCard className="container mt-5" style={{ width: "22rem" }}>
-                <MDBCardImage className="img-fluid" src="https://mdbootstrap.com/img/Photos/Others/nature-sm.jpg" waves/>
                 <MDBCardBody>
-                    <MDBCardTitle>Register to GG-Shark</MDBCardTitle>
+                    <MDBCardImage className="img-fluid" waves />
+                    <MDBCardTitle>Register to Stock Master</MDBCardTitle>
                     <div className="row justify-content-md-left">
                         <div className="col-10 inputMaxSize">
                             <MDBInput className="w-100" name = "email" label="Email" type="email" id="email" group />
@@ -34,7 +34,7 @@ const Register: React.FC<RegisterProps> = ({
                             <MDBInput className="w-100" name = "confirmPassword" label="Confirm password" type="password" id="confirmPassword" group/>
                         </div>
                     </div>
-                    <MDBBtn className="" color="indigo">Register</MDBBtn>
+                    <MDBBtn className="" color="primary">Register</MDBBtn>
                 </MDBCardBody>
             </MDBCard>
         </MDBCol>
@@ -43,7 +43,7 @@ const Register: React.FC<RegisterProps> = ({
 };
 
 const mapStateToProps = (state: IApplicationState) => ({
-  status: state.auth.status
+    Status: state.auth.Status
 });
 
 export default connect(mapStateToProps, actionCreators)(Register as any);

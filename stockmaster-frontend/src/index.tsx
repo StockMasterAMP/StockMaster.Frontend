@@ -12,6 +12,10 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'bootstrap-css-only/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
+import './app/css/background/theme.css'
+import './app/css/button/theme.css'
+import './app/css/nav/theme.css'
+import './app/css/footer/footerStyles.css'
 
 // Create browser history to use in the Redux store / Get the application-wide store instance, prepopulating with state from the server where available.
 const history = createBrowserHistory();

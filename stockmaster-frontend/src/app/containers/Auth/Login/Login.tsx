@@ -6,11 +6,11 @@ import { useToggle, useTextInput } from '../../../hooks';
 import { RoutesConfig, Route } from '../../../config/routes.config';
 import { EmailInput, PasswordInput, LoginControls } from './child-components';
 import { actionCreators, AuthStatusEnum, reducer } from '../../../store/auth';
-import { MDBBtn, MDBCard, MDBCardBody, MDBCardImage, MDBCardTitle, MDBCol, MDBInput, MDBCardText, MDBLink } from 'mdbreact';
+import { MDBBtn, MDBCard, MDBCardBody, MDBCardImage, MDBCardTitle, MDBCol, MDBCardText, MDBLink } from 'mdbreact';
 
 type LoginProps = ReturnType<typeof reducer> & typeof actionCreators & { readonly history: History };
 
-const Login: React.FC<LoginProps> = ({ status, history, resetState, setAuthStatus, loginUserRequest }) => {
+const Login: React.FC<LoginProps> = ({ Status, history, resetState, setAuthStatus, loginUserRequest }) => {
 	const navRoutes: Route[] = Object.keys(RoutesConfig)
 		.map((key) => RoutesConfig[key])
 		.filter((route) => route.type === 'Register');
@@ -32,8 +32,8 @@ const Login: React.FC<LoginProps> = ({ status, history, resetState, setAuthStatu
 
 	const handleLogin = (e: React.ChangeEvent<HTMLFormElement>): void => {
 		e.preventDefault();
-
-		if (status === AuthStatusEnum.PROCESS) {
+		debugger;
+		if (Status === AuthStatusEnum.PROCESS) {
 			return;
 		}
 
@@ -49,7 +49,6 @@ const Login: React.FC<LoginProps> = ({ status, history, resetState, setAuthStatu
 
 			setTimeout(() => {
 				loginUserRequest({
-					rememberMe,
 					email: emailInput.value,
 					password: passwordInput.value,
 				});
@@ -61,10 +60,10 @@ const Login: React.FC<LoginProps> = ({ status, history, resetState, setAuthStatu
 		<React.Fragment>
 			<MDBCol>
 				<MDBCard className="container mt-5" style={{ width: '22rem' }}>
-					<MDBCardImage className="img-fluid" src="https://mdbootstrap.com/img/Photos/Others/images/43.jpg" waves />
+					<MDBCardImage className="img-fluid" waves />
 					<MDBCardBody>
 						<form onSubmit={handleLogin}>
-							<MDBCardTitle>Login to GG-Shark</MDBCardTitle>
+							<MDBCardTitle>Login to Stock Master</MDBCardTitle>
 							<div className="d-inline">
 								<MDBCardText tag="div">
 									Don't have account?
@@ -101,7 +100,7 @@ const Login: React.FC<LoginProps> = ({ status, history, resetState, setAuthStatu
 };
 
 const mapStateToProps = (state: IApplicationState) => ({
-	status: state.auth.status,
+	Status: state.auth.Status,
 });
 
 export default connect(mapStateToProps, actionCreators)(Login as any);

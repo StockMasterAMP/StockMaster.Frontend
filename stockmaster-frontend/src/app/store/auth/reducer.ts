@@ -4,12 +4,15 @@ import { ActionType, IAuthState, AuthStatusEnum } from './types';
 import update from 'immutability-helper';
 
 const initialState = Object.freeze<IAuthState>({
-	token: '',
-	validTo: '',
-	email: '',
-	status: AuthStatusEnum.NONE,
+	AccessToken: '',
+	RefreshToken: '',
+	Role: '',
+	Expires: null,
+	Email: '',
+	Status: AuthStatusEnum.NONE,
 	isAuthenticated: false,
 });
+
 
 export const reducer = (state: IAuthState = initialState, incomingAction: FunctionReturnTypes<typeof actionCreators>) => {
 	const action = incomingAction as ReduxAction;
@@ -20,15 +23,16 @@ export const reducer = (state: IAuthState = initialState, incomingAction: Functi
 
 		case ActionType.SET_AUTH_STATUS:
 			return update(state, {
-				status: { $set: action.status },
+				Status: { $set: action.Status },
 			});
 
 		case ActionType.LOGIN_SUCCESS:
 			return update(state, {
-				token: { $set: action.authUser.token },
-				validTo: { $set: action.authUser.validTo },
-				email: { $set: action.authUser.email },
-				status: { $set: action.authUser.status },
+				AccessToken: { $set: action.authUser.AccessToken },
+				Expires: { $set: action.authUser.Expires },
+				Role: { $set: action.authUser.Role },
+				Email: { $set: action.authUser.Email },
+				Status: { $set: action.authUser.Status },
 				isAuthenticated: { $set: true },
 			});
 		case ActionType.LOGOUT:

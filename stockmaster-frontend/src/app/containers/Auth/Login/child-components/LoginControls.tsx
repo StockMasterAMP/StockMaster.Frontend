@@ -6,7 +6,7 @@ type LoginControlsProps = {};
 
 const LoginControls = React.memo<LoginControlsProps>(() => (
 	<Fragment>
-		<MDBBtn type="submit" className="" color="indigo">
+		<MDBBtn type="submit" className="" color="primary">
 			Sing Up
 		</MDBBtn>
 	</Fragment>
