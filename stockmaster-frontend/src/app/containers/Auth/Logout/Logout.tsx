@@ -33,7 +33,7 @@ const Logout: React.FC<LogoutProps> = ({ logoutUserRequest }) => {
 };
 
 const mapStateToProps = (state: IApplicationState) => ({
-	Status: state.auth.Status,
+	status: state.auth.status,
 });
 
 export default connect(mapStateToProps, actionCreators)(Logout as any);

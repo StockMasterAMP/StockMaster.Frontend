@@ -31,7 +31,7 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated }) => {
 						if (isAuthenticated) {
 							return (
 								<Fragment>
-									{/* {navAuthRoutes.map(
+									{navAuthRoutes.map(
 										(route: Route): ReactNode => (
 											<MDBNavItem key={route.displayName}>
 												<MDBNavLink to={route.path} key={route.path} exact={route.exact}>
@@ -40,7 +40,7 @@ const Navbar: React.FC<NavbarProps> = ({ isAuthenticated }) => {
 											</MDBNavItem>
 										),
 									)}
-									<Logout /> */}
+									<Logout />
 								</Fragment>
 							);
 						} else {

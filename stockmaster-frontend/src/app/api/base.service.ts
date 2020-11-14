@@ -6,9 +6,12 @@ import axios, { AxiosInstance } from 'axios';
 export abstract class BaseService {
 	protected readonly $http: AxiosInstance;
 
-	protected constructor(controllerName: string, requestTimeout: number = 50000) {
+	protected constructor(serviceName: string, requestTimeout: number = 50000) {
 		this.$http = axios.create({
-			baseURL: `http://localhost:${controllerName}/`,
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			baseURL: `http://localhost:5000/${serviceName}/`,
 			timeout: requestTimeout,
 		});
 	}

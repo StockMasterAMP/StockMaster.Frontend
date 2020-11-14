@@ -10,7 +10,7 @@ import { MDBBtn, MDBCard, MDBCardBody, MDBCardImage, MDBCardTitle, MDBCol, MDBCa
 
 type LoginProps = ReturnType<typeof reducer> & typeof actionCreators & { readonly history: History };
 
-const Login: React.FC<LoginProps> = ({ Status, history, resetState, setAuthStatus, loginUserRequest }) => {
+const Login: React.FC<LoginProps> = ({ status, history, resetState, setAuthStatus, loginUserRequest }) => {
 	const navRoutes: Route[] = Object.keys(RoutesConfig)
 		.map((key) => RoutesConfig[key])
 		.filter((route) => route.type === 'Register');
@@ -32,8 +32,8 @@ const Login: React.FC<LoginProps> = ({ Status, history, resetState, setAuthStatu
 
 	const handleLogin = (e: React.ChangeEvent<HTMLFormElement>): void => {
 		e.preventDefault();
-		debugger;
-		if (Status === AuthStatusEnum.PROCESS) {
+		
+		if (status === AuthStatusEnum.PROCESS) {
 			return;
 		}
 
@@ -100,7 +100,7 @@ const Login: React.FC<LoginProps> = ({ Status, history, resetState, setAuthStatu
 };
 
 const mapStateToProps = (state: IApplicationState) => ({
-	Status: state.auth.Status,
+	status: state.auth.status,
 });
 
 export default connect(mapStateToProps, actionCreators)(Login as any);

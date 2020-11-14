@@ -1,1 +1,3 @@
 [1016/220005.578:ERROR:directory_reader_win.cc(43)] FindFirstFile: System nie mo¿e odnaleŸæ okreœlonej œcie¿ki. (0x3)
+[1114/173204.725:ERROR:filesystem_win.cc(129)] GetFileAttributes C:\Users\wisku\AppData\Local\Google\Chrome\User Data\Crashpad\attachments\73aec5d4-1914-4b62-ab33-797f8216aab3: System nie mo¿e odnaleŸæ okreœlonej œcie¿ki. (0x3)
+[1114/173204.728:ERROR:directory_reader_win.cc(43)] FindFirstFile: System nie mo¿e odnaleŸæ okreœlonej œcie¿ki. (0x3)

@@ -1,6 +1,6 @@
 import { AuthApi } from '../../api';
 import { IAppThunkAction, ReduxAction } from '../';
-import { ActionType, IAuthUser, ICredentials, AuthStatusEnum, AuthStatus } from './types';
+import { ActionType, IAuthUser, ICredentials, IRegisterResponse, AuthStatusEnum, AuthStatus } from './types';
 import Cookies from 'js-cookie';
 
 export const actionCreators = {
@@ -14,15 +14,14 @@ export const actionCreators = {
 	}),
 
 	loginUserRequest: (credentials: ICredentials): IAppThunkAction<ReduxAction> => (dispatch) => {
-		AuthApi.loginAsync(credentials).then((authUser: IAuthUser) => {
-			if (authUser.Status === AuthStatusEnum.SUCCESS) {
+		AuthApi.loginAsync(credentials).then((loginResponse: IAuthUser) => {
+			if (loginResponse !== undefined) {
 				dispatch({
-					authUser,
+					loginResponse,
 					type: ActionType.LOGIN_SUCCESS,
 				});
-
-				Cookies.set('AccessToken', authUser.AccessToken, { expires: new Date(authUser.Expires) });
-				Cookies.set('RefreshToken', authUser.RefreshToken, { expires: new Date(authUser.Expires) });
+				Cookies.set('AccessToken', loginResponse.accessToken, { expires: new Date(loginResponse.expires * 1000) });
+				Cookies.set('RefreshToken', loginResponse.refreshToken, { expires: new Date(loginResponse.expires * 1000) });
 			} else {
 				dispatch({ type: ActionType.LOGIN_FAIL });
 			}
@@ -33,5 +32,33 @@ export const actionCreators = {
 		Cookies.remove('AccessToken');
 		Cookies.remove('RefreshToken');
 		dispatch({ type: ActionType.RESET_STATE });
+	},
+
+	registerUserRequest: (credentials: ICredentials): IAppThunkAction<ReduxAction> => (dispatch) => {
+		AuthApi.registerAsync(credentials).then((registerResponse: number | IRegisterResponse) => {
+			if (registerResponse == 201) {
+				dispatch({ type: ActionType.REGISTER_SUCCESS });
+
+				AuthApi.loginAsync(credentials).then((loginResponse: IAuthUser) => {
+					if (loginResponse !== undefined) {
+						dispatch({
+							loginResponse,
+							type: ActionType.LOGIN_SUCCESS,
+						});
+
+						Cookies.set('AccessToken', loginResponse.accessToken, { expires: new Date(loginResponse.expires * 1000) });
+
+						Cookies.set('RefreshToken', loginResponse.refreshToken, { expires: new Date(loginResponse.expires * 1000) });
+					} else {
+						dispatch({ type: ActionType.LOGIN_FAIL });
+					}
+				});
+			} else {
+				dispatch({
+					registerResponse,
+					type: ActionType.REGISTER_FAIL,
+				});
+			}
+		});
 	},
 };
