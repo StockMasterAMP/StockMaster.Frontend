@@ -10,7 +10,7 @@ import { MDBBtn, MDBCard, MDBCardBody, MDBCardImage, MDBCardTitle, MDBCol, MDBCa
 
 type LoginProps = ReturnType<typeof reducer> & typeof actionCreators & { readonly history: History };
 
-const Login: React.FC<LoginProps> = ({ status, history, resetState, setAuthStatus, loginUserRequest }) => {
+const Login: React.FC<LoginProps> = ({loginResponse, validationErrors, history, resetState, setLoginAuthStatus, loginUserRequest, }) => {
 	const navRoutes: Route[] = Object.keys(RoutesConfig)
 		.map((key) => RoutesConfig[key])
 		.filter((route) => route.type === 'Register');
@@ -24,8 +24,8 @@ const Login: React.FC<LoginProps> = ({ status, history, resetState, setAuthStatu
 
 	const onFailedAuth = useCallback((): void => {
 		resetState();
-		setAuthStatus(AuthStatusEnum.NONE);
-	}, [resetState, setAuthStatus]);
+		setLoginAuthStatus(AuthStatusEnum.NONE);
+	}, [resetState, setLoginAuthStatus]);
 
 	const onRememberMeCheck = useCallback((checked: boolean): void => setRememberMe(checked), []);
 	const onSuccessfulAuth = useCallback((): void => history.push(RoutesConfig.Portal.path), [history]);
@@ -33,7 +33,7 @@ const Login: React.FC<LoginProps> = ({ status, history, resetState, setAuthStatu
 	const handleLogin = (e: React.ChangeEvent<HTMLFormElement>): void => {
 		e.preventDefault();
 		
-		if (status === AuthStatusEnum.PROCESS) {
+		if (loginResponse.status === AuthStatusEnum.PROCESS) {
 			return;
 		}
 
@@ -45,7 +45,7 @@ const Login: React.FC<LoginProps> = ({ status, history, resetState, setAuthStatu
 			// Clear any toast notifications and prepare state for Login request stub / run login request stub
 
 			setIsInputInvalid(false);
-			setAuthStatus(AuthStatusEnum.PROCESS);
+			setLoginAuthStatus(AuthStatusEnum.PROCESS);
 
 			setTimeout(() => {
 				loginUserRequest({
@@ -55,6 +55,12 @@ const Login: React.FC<LoginProps> = ({ status, history, resetState, setAuthStatu
 			}, 1000);
 		}
 	};
+
+	const validateRegistrationForm = (): JSX.Element | null => {
+        return validationErrors 
+            ? <p className="font-weight-bold">{loginResponse.reason}</p> 
+            : null
+    };
 
 	return (
 		<React.Fragment>
@@ -87,7 +93,7 @@ const Login: React.FC<LoginProps> = ({ status, history, resetState, setAuthStatu
 								isInputInvalid={isInputInvalid}
 								toggleShowPassword={toggleShowPassword}
 							/>
-
+							{validateRegistrationForm()}
 							<LoginControls />
 						</form>
 
@@ -99,8 +105,6 @@ const Login: React.FC<LoginProps> = ({ status, history, resetState, setAuthStatu
 	);
 };
 
-const mapStateToProps = (state: IApplicationState) => ({
-	status: state.auth.status,
-});
+const mapStateToProps = (state: IApplicationState) => state.auth
 
 export default connect(mapStateToProps, actionCreators)(Login as any);

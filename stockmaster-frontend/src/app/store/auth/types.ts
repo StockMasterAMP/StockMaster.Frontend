@@ -1,66 +1,66 @@
 export interface IActionType {
-	readonly LOGIN: string;
-	readonly LOGIN_SUCCESS: string;
-	readonly LOGIN_FAIL: string;
-	readonly LOGOUT: string;
-	readonly RESET_STATE: string;
-	readonly SET_AUTH_STATUS: string;
-	readonly REGISTER: string;
-	readonly REGISTER_SUCCESS: string;
-	readonly REGISTER_FAIL: string;
+    readonly LOGIN: string;
+    readonly LOGIN_SUCCESS: string;
+    readonly LOGIN_FAIL: string;
+    readonly LOGOUT: string;
+    readonly RESET_STATE: string;
+    readonly REGISTER: string;
+    readonly REGISTER_SUCCESS: string;
+    readonly REGISTER_FAIL: string;
+    readonly SET_LOGIN_AUTH_STATUS: string;
+    readonly SET_REGISTER_AUTH_STATUS: string;
 }
 
 export type AuthStatus = 'none' | 'process' | 'success' | 'fail';
 
 export type ICredentials = {
-	email?: string;
-	password?: string;
+    email: string;
+    password: string;
 };
 
-export type IRegisterResponse = {
-	reason: string;
-	code: string;
-	statusCode: number;
+export type ResponseBase = {
+    reason: string;
+    code: string;
+    statusCode: number;
+    status: AuthStatus;
 };
+export type RegisterRequest = ICredentials & {};
+export type RegisterResponse = ResponseBase & {};
 
-export type IAuthUser = {
-	accessToken: string | object;
-	refreshToken: string;
-	role: string;
-	expires: number;
-	email: string;
-	status?: AuthStatus;
+export type LoginRequest = ICredentials & {};
+export type LoginResponse = ResponseBase & {
+    accessToken: string | object;
+    refreshToken: string | object;
+    role: string;
+    expires: number;
+    email: string;
 };
 
 export type IAuthState = {
-	readonly accessToken: string | object | null;
-	readonly refreshToken: string | null;
-	readonly role: string | null;
-	readonly expires: number | null;
-	readonly email: string;
-	readonly status?: AuthStatus;
-	readonly isAuthenticated: boolean;
-	readonly code: string;
-	readonly reason: string;
+    loginResponse: LoginResponse;
+    registerResponse: RegisterResponse;
+    isAuthenticated: boolean;
+    validationErrors: boolean;
 };
 
 const _namespace = 'Authentication';
 
 export const ActionType = Object.freeze<IActionType>({
-	LOGIN: `${_namespace}/login`,
-	LOGIN_SUCCESS: `${_namespace}/loginSuccess`,
-	LOGIN_FAIL: `${_namespace}/loginFail`,
-	LOGOUT: `${_namespace}/logout`,
-	RESET_STATE: `${_namespace}/resetState`,
-	SET_AUTH_STATUS: `${_namespace}/setAuthStatus`,
-	REGISTER: `${_namespace}/register`,
-	REGISTER_SUCCESS: `${_namespace}/registerSuccess`,
-	REGISTER_FAIL: `${_namespace}/registerFail`,
+    LOGIN: `${_namespace}/login`,
+    LOGIN_SUCCESS: `${_namespace}/loginSuccess`,
+    LOGIN_FAIL: `${_namespace}/loginFail`,
+    LOGOUT: `${_namespace}/logout`,
+    RESET_STATE: `${_namespace}/resetState`,
+    REGISTER: `${_namespace}/register`,
+    REGISTER_SUCCESS: `${_namespace}/registerSuccess`,
+    REGISTER_FAIL: `${_namespace}/registerFail`,
+    SET_LOGIN_AUTH_STATUS: `${_namespace}/setLoginAuthStatus`,
+    SET_REGISTER_AUTH_STATUS: `${_namespace}/setRegisterAuthStatus`,
 });
 
 export const AuthStatusEnum = Object.freeze<{ [key: string]: AuthStatus }>({
-	NONE: 'none',
-	PROCESS: 'process',
-	SUCCESS: 'success',
-	FAIL: 'fail',
+    NONE: 'none',
+    PROCESS: 'process',
+    SUCCESS: 'success',
+    FAIL: 'fail',
 });

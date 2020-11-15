@@ -1,64 +1,81 @@
 import { AuthApi } from '../../api';
 import { IAppThunkAction, ReduxAction } from '../';
-import { ActionType, IAuthUser, ICredentials, IRegisterResponse, AuthStatusEnum, AuthStatus } from './types';
+import { ActionType, LoginRequest, LoginResponse, RegisterRequest, RegisterResponse, AuthStatus } from './types';
 import Cookies from 'js-cookie';
 
 export const actionCreators = {
-	resetState: (): ReduxAction => ({
-		type: ActionType.RESET_STATE,
-	}),
+    resetState: (): ReduxAction => ({
+        type: ActionType.RESET_STATE,
+    }),
 
-	setAuthStatus: (status: AuthStatus): ReduxAction => ({
-		status,
-		type: ActionType.SET_AUTH_STATUS,
-	}),
+    setRegisterAuthStatus: (status: AuthStatus): ReduxAction => ({
+        status,
+        type: ActionType.SET_REGISTER_AUTH_STATUS,
+    }),
 
-	loginUserRequest: (credentials: ICredentials): IAppThunkAction<ReduxAction> => (dispatch) => {
-		AuthApi.loginAsync(credentials).then((loginResponse: IAuthUser) => {
-			if (loginResponse !== undefined) {
-				dispatch({
-					loginResponse,
-					type: ActionType.LOGIN_SUCCESS,
-				});
-				Cookies.set('AccessToken', loginResponse.accessToken, { expires: new Date(loginResponse.expires * 1000) });
-				Cookies.set('RefreshToken', loginResponse.refreshToken, { expires: new Date(loginResponse.expires * 1000) });
-			} else {
-				dispatch({ type: ActionType.LOGIN_FAIL });
-			}
-		});
-	},
+    setLoginAuthStatus: (status: AuthStatus): ReduxAction => ({
+        status,
+        type: ActionType.SET_LOGIN_AUTH_STATUS,
+    }),
 
-	logoutUserRequest: (): IAppThunkAction<ReduxAction> => (dispatch) => {
-		Cookies.remove('AccessToken');
-		Cookies.remove('RefreshToken');
-		dispatch({ type: ActionType.RESET_STATE });
-	},
+    loginUserRequest: (loginRequest: LoginRequest): IAppThunkAction<ReduxAction> => (dispatch) => {
+        AuthApi.loginAsync(loginRequest).then((loginResponse: Partial<LoginResponse>) => {
+            if (
+                loginResponse.accessToken &&
+                loginResponse.expires &&
+                loginResponse.refreshToken &&
+                loginResponse.role
+            ) {
+                Cookies.set('AccessToken', loginResponse.accessToken, {
+                    expires: new Date(loginResponse.expires * 1000),
+                });
+                Cookies.set('RefreshToken', loginResponse.refreshToken, {
+                    expires: new Date().getTime(),
+                });
+                dispatch({ loginResponse, type: ActionType.LOGIN_SUCCESS });
+            } else {
+                dispatch({ loginResponse, type: ActionType.LOGIN_FAIL });
+            }
+        });
+    },
 
-	registerUserRequest: (credentials: ICredentials): IAppThunkAction<ReduxAction> => (dispatch) => {
-		AuthApi.registerAsync(credentials).then((registerResponse: number | IRegisterResponse) => {
-			if (registerResponse == 201) {
-				dispatch({ type: ActionType.REGISTER_SUCCESS });
+    logoutUserRequest: (): IAppThunkAction<ReduxAction> => (dispatch) => {
+        Cookies.remove('AccessToken');
+        dispatch({ type: ActionType.RESET_STATE });
+    },
 
-				AuthApi.loginAsync(credentials).then((loginResponse: IAuthUser) => {
-					if (loginResponse !== undefined) {
-						dispatch({
-							loginResponse,
-							type: ActionType.LOGIN_SUCCESS,
-						});
+    registerUserRequest: (registerRequest: RegisterRequest): IAppThunkAction<ReduxAction> => (dispatch) => {
+        AuthApi.registerAsync(registerRequest).then((registerResponse: Partial<RegisterResponse>) => {
+            if (registerResponse.statusCode == 201) {
+                var loginRequest: LoginRequest = {
+                    email: registerRequest.email,
+                    password: registerRequest.password,
+                };
 
-						Cookies.set('AccessToken', loginResponse.accessToken, { expires: new Date(loginResponse.expires * 1000) });
+                AuthApi.loginAsync(loginRequest).then((loginResponse: Partial<LoginResponse>) => {
+                    if (
+                        loginResponse.accessToken &&
+                        loginResponse.expires &&
+                        loginResponse.refreshToken &&
+                        loginResponse.role
+                    ) {
+                        Cookies.set('AccessToken', loginResponse.accessToken, {
+                            expires: new Date(loginResponse.expires * 1000),
+                        });
 
-						Cookies.set('RefreshToken', loginResponse.refreshToken, { expires: new Date(loginResponse.expires * 1000) });
-					} else {
-						dispatch({ type: ActionType.LOGIN_FAIL });
-					}
-				});
-			} else {
-				dispatch({
-					registerResponse,
-					type: ActionType.REGISTER_FAIL,
-				});
-			}
-		});
-	},
+                        Cookies.set('RefreshToken', loginResponse.refreshToken, {
+                            expires: new Date(loginResponse.expires * 1000),
+                        });
+                        dispatch({ registerResponse, type: ActionType.REGISTER_SUCCESS });
+                        dispatch({ loginResponse, type: ActionType.LOGIN_SUCCESS });
+                    } else {
+                        dispatch({ registerResponse, type: ActionType.REGISTER_FAIL });
+                        dispatch({ loginResponse, type: ActionType.LOGIN_FAIL });
+                    }
+                });
+            } else {
+                dispatch({ registerResponse, type: ActionType.REGISTER_FAIL });
+            }
+        });
+    },
 };

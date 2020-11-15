@@ -1,26 +1,32 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { History } from "history";
 import { connect } from "react-redux";
-import { IApplicationState } from "../../../store/";
+import { IApplicationState, ReduxAction } from "../../../store/";
 import { useToggle, useTextInput } from '../../../hooks';
 import { actionCreators, AuthStatusEnum, reducer } from "../../../store/auth";
 import { MDBBtn, MDBCard, MDBCardBody, MDBCardImage, MDBCardTitle, MDBCol, MDBInput } from 'mdbreact';
 import { EmailInput, PasswordInput } from '../Login/child-components';
+import { stat } from 'fs';
+import { JsxElement } from 'typescript';
 
 type RegisterProps = ReturnType<typeof reducer> & typeof actionCreators & { readonly history: History };
 
-const Register: React.FC<RegisterProps> = ({status, history, resetState, setAuthStatus, registerUserRequest, loginUserRequest}) => {
+const Register: React.FC<RegisterProps> = ({ history, setRegisterAuthStatus, registerUserRequest, validationErrors, registerResponse}) => {
 
     const [showPassword, toggleShowPassword] = useToggle(false);
     const [showConfirmPassword, toggleShowConfirmPassword] = useToggle(false);
-
+    
 	const [rememberMe, setRememberMe] = useState<boolean>(false);
     const [isInputInvalid, setIsInputInvalid] = useState<boolean>(false);
     
     const emailInput = useTextInput('');
     const passwordInput = useTextInput('', showPassword ? 'text' : 'password');
     const passwordConfirmInput = useTextInput('', showConfirmPassword ? 'text' : 'password');
-    
+
+    useEffect(() => {
+        validateRegistrationForm();
+    }, [validationErrors]);
+
     const handleRegister = (e: React.ChangeEvent<HTMLFormElement>): void => {
 		e.preventDefault();
 		if (!emailInput.hasValue || !passwordInput.hasValue  || !passwordConfirmInput.hasValue) {
@@ -35,13 +41,20 @@ const Register: React.FC<RegisterProps> = ({status, history, resetState, setAuth
 		} else {
 
 			setIsInputInvalid(false);
-            setAuthStatus(AuthStatusEnum.PROCESS);
+            setRegisterAuthStatus(AuthStatusEnum.PROCESS);
 
             registerUserRequest({
                 email: emailInput.value,
                 password: passwordInput.value,
             });
+
 		}
+    };
+
+    const validateRegistrationForm = (): JSX.Element | null => {
+        return validationErrors 
+            ? <p className="font-weight-bold">{registerResponse.reason}</p> 
+            : null
     };
 
     return (
@@ -67,7 +80,7 @@ const Register: React.FC<RegisterProps> = ({status, history, resetState, setAuth
 								isInputInvalid={isInputInvalid}
 								toggleShowPassword={toggleShowConfirmPassword}
 							/>
-
+                            {validateRegistrationForm()}
                             <MDBBtn type="submit" color="primary">Register</MDBBtn>
                         </form>
                     </MDBCardBody>
@@ -77,8 +90,6 @@ const Register: React.FC<RegisterProps> = ({status, history, resetState, setAuth
   );
 };
 
-const mapStateToProps = (state: IApplicationState) => ({
-    status: state.auth.status
-});
+const mapStateToProps = (state: IApplicationState) => state.auth
 
 export default connect(mapStateToProps, actionCreators)(Register as any);
