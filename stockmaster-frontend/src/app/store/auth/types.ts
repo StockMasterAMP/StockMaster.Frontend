@@ -21,7 +21,7 @@ export type ICredentials = {
 export type ResponseBase = {
     reason: string;
     code: string;
-    statusCode: number;
+    statusCode: number | null;
     status: AuthStatus;
 };
 export type RegisterRequest = ICredentials & {};

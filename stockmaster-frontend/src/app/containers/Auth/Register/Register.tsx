@@ -6,12 +6,12 @@ import { useToggle, useTextInput } from '../../../hooks';
 import { actionCreators, AuthStatusEnum, reducer } from "../../../store/auth";
 import { MDBBtn, MDBCard, MDBCardBody, MDBCardImage, MDBCardTitle, MDBCol, MDBInput } from 'mdbreact';
 import { EmailInput, PasswordInput } from '../Login/child-components';
-import { stat } from 'fs';
-import { JsxElement } from 'typescript';
+import { Authenticator } from '../../../components';
+import { RoutesConfig } from '../../../config/routes.config';
 
 type RegisterProps = ReturnType<typeof reducer> & typeof actionCreators & { readonly history: History };
 
-const Register: React.FC<RegisterProps> = ({ history, setRegisterAuthStatus, registerUserRequest, validationErrors, registerResponse}) => {
+const Register: React.FC<RegisterProps> = ({ setRegisterAuthStatus, registerUserRequest, resetState, validationErrors, registerResponse, isAuthenticated, history}) => {
 
     const [showPassword, toggleShowPassword] = useToggle(false);
     const [showConfirmPassword, toggleShowConfirmPassword] = useToggle(false);
@@ -27,6 +27,13 @@ const Register: React.FC<RegisterProps> = ({ history, setRegisterAuthStatus, reg
         validateRegistrationForm();
     }, [validationErrors]);
 
+    const onFailedAuth = useCallback((): void => {
+		resetState();
+		setRegisterAuthStatus(AuthStatusEnum.NONE);
+    }, [resetState, setRegisterAuthStatus]);
+    
+    const onSuccessfulAuth = useCallback((): void => history.push(RoutesConfig.Portal.path), [history]);
+    
     const handleRegister = (e: React.ChangeEvent<HTMLFormElement>): void => {
 		e.preventDefault();
 		if (!emailInput.hasValue || !passwordInput.hasValue  || !passwordConfirmInput.hasValue) {
@@ -47,6 +54,10 @@ const Register: React.FC<RegisterProps> = ({ history, setRegisterAuthStatus, reg
                 email: emailInput.value,
                 password: passwordInput.value,
             });
+
+            if(isAuthenticated && !validationErrors){
+
+            }
 
 		}
     };
@@ -83,6 +94,7 @@ const Register: React.FC<RegisterProps> = ({ history, setRegisterAuthStatus, reg
                             {validateRegistrationForm()}
                             <MDBBtn type="submit" color="primary">Register</MDBBtn>
                         </form>
+                        <Authenticator authStatus={registerResponse.status} handleOnFail={onFailedAuth} handleOnSuccess={onSuccessfulAuth} />
                     </MDBCardBody>
                 </MDBCard>
             </MDBCol>

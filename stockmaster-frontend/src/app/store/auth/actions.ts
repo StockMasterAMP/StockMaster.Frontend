@@ -41,7 +41,8 @@ export const actionCreators = {
 
     logoutUserRequest: (): IAppThunkAction<ReduxAction> => (dispatch) => {
         Cookies.remove('AccessToken');
-        dispatch({ type: ActionType.RESET_STATE });
+        debugger;
+        dispatch({ type: ActionType.LOGOUT });
     },
 
     registerUserRequest: (registerRequest: RegisterRequest): IAppThunkAction<ReduxAction> => (dispatch) => {
