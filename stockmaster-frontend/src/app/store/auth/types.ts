@@ -36,6 +36,14 @@ export type LoginResponse = ResponseBase & {
     email: string;
 };
 
+export type RefreshTokensResponse = {
+    statusCode: number | null;
+    accessToken: string | object;
+    refreshToken: string | object;
+    role: string;
+    expires: number;
+};
+
 export type IAuthState = {
     loginResponse: LoginResponse;
     registerResponse: RegisterResponse;

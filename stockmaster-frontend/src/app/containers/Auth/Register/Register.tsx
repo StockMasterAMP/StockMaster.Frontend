@@ -56,9 +56,8 @@ const Register: React.FC<RegisterProps> = ({ setRegisterAuthStatus, registerUser
             });
 
             if(isAuthenticated && !validationErrors){
-
+                setRegisterAuthStatus(AuthStatusEnum.SUCCESS);
             }
-
 		}
     };
 

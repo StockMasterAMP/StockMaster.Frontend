@@ -19,29 +19,12 @@ export const actionCreators = {
     }),
 
     loginUserRequest: (loginRequest: LoginRequest): IAppThunkAction<ReduxAction> => (dispatch) => {
-        AuthApi.loginAsync(loginRequest).then((loginResponse: Partial<LoginResponse>) => {
-            if (
-                loginResponse.accessToken &&
-                loginResponse.expires &&
-                loginResponse.refreshToken &&
-                loginResponse.role
-            ) {
-                Cookies.set('AccessToken', loginResponse.accessToken, {
-                    expires: new Date(loginResponse.expires * 1000),
-                });
-                Cookies.set('RefreshToken', loginResponse.refreshToken, {
-                    expires: new Date().getTime(),
-                });
-                dispatch({ loginResponse, type: ActionType.LOGIN_SUCCESS });
-            } else {
-                dispatch({ loginResponse, type: ActionType.LOGIN_FAIL });
-            }
-        });
+        proceedLoginProcess(loginRequest, dispatch, null);
     },
 
     logoutUserRequest: (): IAppThunkAction<ReduxAction> => (dispatch) => {
-        Cookies.remove('AccessToken');
-        debugger;
+        accessTokenRevoke();
+        refreshTokenRevoke();
         dispatch({ type: ActionType.LOGOUT });
     },
 
@@ -53,30 +36,55 @@ export const actionCreators = {
                     password: registerRequest.password,
                 };
 
-                AuthApi.loginAsync(loginRequest).then((loginResponse: Partial<LoginResponse>) => {
-                    if (
-                        loginResponse.accessToken &&
-                        loginResponse.expires &&
-                        loginResponse.refreshToken &&
-                        loginResponse.role
-                    ) {
-                        Cookies.set('AccessToken', loginResponse.accessToken, {
-                            expires: new Date(loginResponse.expires * 1000),
-                        });
-
-                        Cookies.set('RefreshToken', loginResponse.refreshToken, {
-                            expires: new Date(loginResponse.expires * 1000),
-                        });
-                        dispatch({ registerResponse, type: ActionType.REGISTER_SUCCESS });
-                        dispatch({ loginResponse, type: ActionType.LOGIN_SUCCESS });
-                    } else {
-                        dispatch({ registerResponse, type: ActionType.REGISTER_FAIL });
-                        dispatch({ loginResponse, type: ActionType.LOGIN_FAIL });
-                    }
-                });
+                proceedLoginProcess(loginRequest, dispatch, registerResponse);
             } else {
                 dispatch({ registerResponse, type: ActionType.REGISTER_FAIL });
             }
         });
     },
+};
+
+const proceedLoginProcess = (
+    loginRequest: LoginRequest,
+    dispatch: (action: ReduxAction) => void,
+    registerResponse: Partial<RegisterResponse> | null,
+) => {
+    AuthApi.loginAsync(loginRequest).then((loginResponse: Partial<LoginResponse>) => {
+        if (loginResponse.accessToken && loginResponse.expires && loginResponse.refreshToken && loginResponse.role) {
+            Cookies.set('AccessToken', loginResponse.accessToken, {
+                expires: new Date(loginResponse.expires * 1000),
+            });
+            Cookies.set('RefreshToken', loginResponse.refreshToken, {
+                expires: new Date().getTime(),
+            });
+            dispatch({ loginResponse, type: ActionType.LOGIN_SUCCESS });
+            registerResponse !== null ?? dispatch({ registerResponse, type: ActionType.REGISTER_SUCCESS });
+        } else {
+            registerResponse !== null ?? dispatch({ registerResponse, type: ActionType.REGISTER_FAIL });
+            dispatch({ loginResponse, type: ActionType.LOGIN_FAIL });
+        }
+    });
+};
+
+const accessTokenRevoke = () => {
+    if (Cookies.get('AccessToken')!?.length > 0) {
+        let accessTokenString: string = Cookies.get('AccessToken')!.toString();
+        AuthApi.accessTokensRevoke(accessTokenString);
+        Cookies.remove('AccessToken');
+    }
+};
+
+const refreshTokenRevoke = () => {
+    if (Cookies.get('RefreshToken')!?.length > 0) {
+        let refreshTokenString: string = Cookies.get('RefreshToken')!.toString();
+        AuthApi.refreshTokenRevoke(refreshTokenString);
+        Cookies.remove('RefreshToken');
+    }
+};
+
+const updateAuthenticationTokens = () => {
+    if (Cookies.get('RefreshToken')!?.length > 0) {
+        let refreshTokenString: string = Cookies.get('RefreshToken')!.toString();
+        AuthApi.updateAuthenticationTokens(refreshTokenString);
+    }
 };

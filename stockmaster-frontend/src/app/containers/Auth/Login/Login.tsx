@@ -56,7 +56,7 @@ const Login: React.FC<LoginProps> = ({loginResponse, validationErrors, history, 
 		}
 	};
 
-	const validateRegistrationForm = (): JSX.Element | null => {
+	const validateLoginForm = (): JSX.Element | null => {
         return validationErrors 
             ? <p className="font-weight-bold">{loginResponse.reason}</p> 
             : null
@@ -93,7 +93,7 @@ const Login: React.FC<LoginProps> = ({loginResponse, validationErrors, history, 
 								isInputInvalid={isInputInvalid}
 								toggleShowPassword={toggleShowPassword}
 							/>
-							{validateRegistrationForm()}
+							{validateLoginForm()}
 							<LoginControls />
 						</form>
 

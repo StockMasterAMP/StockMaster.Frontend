@@ -43,4 +43,13 @@ export const RoutesConfig = Object.freeze<{ [key: string]: Route }>({
         authenticatedRoute: true,
         displayOrder: 4,
     },
+
+    Account: {
+        exact: true,
+        type: 'Account',
+        path: '/Account',
+        displayName: 'Account',
+        authenticatedRoute: true,
+        displayOrder: 5,
+    },
 });

@@ -1,6 +1,7 @@
 import { AxiosResponse } from 'axios';
 import { BaseService } from './base.service';
 import { LoginRequest, LoginResponse, RegisterRequest, RegisterResponse } from '../store/auth/types';
+import Cookies from 'js-cookie';
 
 /**
  * Auth API abstraction layer communication via Axios (typescript singleton pattern)
@@ -52,6 +53,43 @@ class AuthService extends BaseService {
                     statusCode: error.response.status,
                 };
                 return registerResponse;
+            });
+    }
+
+    public async accessTokensRevoke(accessToken: string): Promise<AxiosResponse> {
+        return await this.$http
+            .post('access-tokens/revoke', { accessToken })
+            .then((response) => {
+                return response.status;
+            })
+            .catch((error) => {
+                return error.status;
+            });
+    }
+
+    public async refreshTokenRevoke(refreshToken: string): Promise<AxiosResponse> {
+        return await this.$http
+            .post('refresh-tokens/revoke', { refreshToken })
+            .then((response) => {
+                return response.status;
+            })
+            .catch((error) => {
+                return error.status;
+            });
+    }
+
+    public async getAboutMe(): Promise<AxiosResponse> {
+        let token: string | undefined;
+        Cookies.get('AccessToken') === 'undefined' ? (token = undefined) : (token = Cookies.get('AccessToken'));
+        return await this.$http
+            .get('/me', {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+            .then((response) => {
+                return response;
+            })
+            .catch((error) => {
+                return error;
             });
     }
 }
