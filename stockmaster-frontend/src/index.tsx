@@ -5,8 +5,12 @@ import { Provider } from 'react-redux';
 import { createBrowserHistory } from 'history';
 import { AppContainer } from 'react-hot-loader';
 import { ConnectedRouter } from 'connected-react-router';
-import { configureStore, IApplicationState } from './app/store/index';
+import { configureStore, IApplicationState, IAppThunkAction, ReduxAction } from './app/store/index';
 import * as serviceWorker from './serviceWorker';
+
+import { ActionType } from './app/store/auth/types';
+import { actionCreators } from './app/store/auth/actions'
+import Cookies from 'js-cookie';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -22,6 +26,15 @@ const history = createBrowserHistory();
 const initialState = (window as any).initialReduxState as IApplicationState;
 const store = configureStore(history, initialState);
 
+const autoAuthentication = (): void => {
+//https://stackoverflow.com/questions/39097440/on-react-router-how-to-stay-logged-in-state-even-page-refresh
+	let refreshToken: string | undefined;
+	Cookies.get('RefreshToken') === 'undefined' ? (refreshToken = undefined) : (refreshToken = Cookies.get('RefreshToken'));
+	if (refreshToken !== undefined) {
+		store.dispatch<any>(actionCreators.updateAuthenticationTokens());
+	}
+}
+
 // This function starts up the React app when it runs in a browser. It sets up the routing configuration and injects the app into a DOM element.
 const renderApp = (): void => {
 	ReactDOM.render(
@@ -33,8 +46,8 @@ const renderApp = (): void => {
 		document.getElementById('root'),
 	);
 };
-
 // Execute function above to patch app to DOM
+autoAuthentication();
 renderApp();
 
 // Allow Hot Module Replacement

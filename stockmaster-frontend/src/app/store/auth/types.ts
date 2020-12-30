@@ -9,6 +9,7 @@ export interface IActionType {
     readonly REGISTER_FAIL: string;
     readonly SET_LOGIN_AUTH_STATUS: string;
     readonly SET_REGISTER_AUTH_STATUS: string;
+    readonly TRY_AUTHENTICATE: string;
 }
 
 export type AuthStatus = 'none' | 'process' | 'success' | 'fail';
@@ -64,6 +65,7 @@ export const ActionType = Object.freeze<IActionType>({
     REGISTER_FAIL: `${_namespace}/registerFail`,
     SET_LOGIN_AUTH_STATUS: `${_namespace}/setLoginAuthStatus`,
     SET_REGISTER_AUTH_STATUS: `${_namespace}/setRegisterAuthStatus`,
+    TRY_AUTHENTICATE: `${_namespace}/TRY_AUTHENTICATE`,
 });
 
 export const AuthStatusEnum = Object.freeze<{ [key: string]: AuthStatus }>({

@@ -26,9 +26,9 @@ export abstract class BaseService {
             (error) => {
                 const status = error.response ? error.response.status : null;
                 let refreshToken: string | undefined;
-                Cookies.get('AccessToken') === 'undefined'
+                Cookies.get('RefreshToken') === 'undefined'
                     ? (refreshToken = undefined)
-                    : (refreshToken = Cookies.get('AccessToken'));
+                    : (refreshToken = Cookies.get('RefreshToken'));
                 if (status === 401 && refreshToken !== undefined) {
                     this.updateAuthenticationTokens(refreshToken).then((response) => {
                         Cookies.set('RefreshToken', response.refreshToken);

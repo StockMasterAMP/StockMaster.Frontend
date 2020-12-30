@@ -14,7 +14,7 @@ const Login: React.FC<LoginProps> = ({loginResponse, validationErrors, history, 
 	const navRoutes: Route[] = Object.keys(RoutesConfig)
 		.map((key) => RoutesConfig[key])
 		.filter((route) => route.type === 'Register');
-
+		
 	const [showPassword, toggleShowPassword] = useToggle(false);
 	const [rememberMe, setRememberMe] = useState<boolean>(false);
 	const [isInputInvalid, setIsInputInvalid] = useState<boolean>(false);

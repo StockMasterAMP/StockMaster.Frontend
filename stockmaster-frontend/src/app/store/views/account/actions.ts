@@ -8,13 +8,8 @@ export const actionCreators = {
     }),
 
     getAboutMe: (): IAppThunkAction<ReduxAction> => (dispatch) => {
-        AuthApi.getAboutMe()
-            .then((item: any) => {
-                // TODO
-            })
-            .catch((error: any) => {
-                // TODO
-                throw 401;
-            });
+        AuthApi.getAboutMe().then((response: any) => {
+            // TODO
+        });
     },
 };

@@ -42,6 +42,30 @@ export const actionCreators = {
             }
         });
     },
+
+    updateAuthenticationTokens: (): IAppThunkAction<ReduxAction> => (dispatch) => {
+        if (Cookies.get('RefreshToken')!?.length > 0) {
+            let refreshTokenString: string = Cookies.get('RefreshToken')!.toString();
+            AuthApi.updateAuthenticationTokens(refreshTokenString).then((loginResponse: Partial<LoginResponse>) => {
+                if (
+                    loginResponse.accessToken &&
+                    loginResponse.expires &&
+                    loginResponse.refreshToken &&
+                    loginResponse.role
+                ) {
+                    Cookies.set('AccessToken', loginResponse.accessToken, {
+                        expires: new Date(loginResponse.expires * 1000),
+                    });
+                    Cookies.set('RefreshToken', loginResponse.refreshToken, {
+                        expires: new Date().getTime(),
+                    });
+                    dispatch({ loginResponse, type: ActionType.LOGIN_SUCCESS });
+                } else {
+                    dispatch({ loginResponse, type: ActionType.LOGIN_FAIL });
+                }
+            });
+        }
+    },
 };
 
 const proceedLoginProcess = (
